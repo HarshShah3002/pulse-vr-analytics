@@ -1,0 +1,8 @@
+# View: peer coaches.
+schema: marts
+table_name: dim_coaches
+label: Coaches
+dimensions:
+  coach_id: { sql: '"coach_id"', primary_key: true }
+  coach_name: { sql: '"coach_name"', synonyms: [coach, peer coach] }
+  hire_date: { sql: '"hire_date"', timeframes: [date, month] }

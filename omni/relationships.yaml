@@ -1,0 +1,44 @@
+# Omni relationships file. View names assume Omni registered the MotherDuck tables
+# as marts__<table>. If your views are named differently, find and replace the prefix.
+
+- join_from_view: marts__dim_members
+  join_to_view: marts__dim_coaches
+  join_type: always_left
+  on_sql: ${marts__dim_members.coach_id} = ${marts__dim_coaches.coach_id}
+  relationship_type: many_to_one
+
+- join_from_view: marts__fct_sessions
+  join_to_view: marts__dim_members
+  join_type: always_left
+  on_sql: ${marts__fct_sessions.member_id} = ${marts__dim_members.member_id}
+  relationship_type: many_to_one
+
+- join_from_view: marts__fct_orders
+  join_to_view: marts__dim_members
+  join_type: always_left
+  on_sql: ${marts__fct_orders.member_id} = ${marts__dim_members.member_id}
+  relationship_type: many_to_one
+
+- join_from_view: marts__fct_orders
+  join_to_view: marts__dim_headsets
+  join_type: always_left
+  on_sql: ${marts__fct_orders.headset_id} = ${marts__dim_headsets.headset_id}
+  relationship_type: many_to_one
+
+- join_from_view: marts__fct_rental_months
+  join_to_view: marts__dim_members
+  join_type: always_left
+  on_sql: ${marts__fct_rental_months.member_id} = ${marts__dim_members.member_id}
+  relationship_type: many_to_one
+
+- join_from_view: marts__fct_outreach
+  join_to_view: marts__dim_members
+  join_type: always_left
+  on_sql: ${marts__fct_outreach.member_id} = ${marts__dim_members.member_id}
+  relationship_type: many_to_one
+
+- join_from_view: marts__fct_status_backtest
+  join_to_view: marts__dim_members
+  join_type: always_left
+  on_sql: ${marts__fct_status_backtest.member_id} = ${marts__dim_members.member_id}
+  relationship_type: many_to_one

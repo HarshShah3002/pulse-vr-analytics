@@ -1,0 +1,29 @@
+# Topic: Devices and Returns.
+base_view: marts__fct_orders
+label: Devices and Returns
+description: Headset shipments, faults, replacements, returns and return reasons.
+joins:
+  marts__dim_members: {}
+  marts__dim_headsets: {}
+ai_fields: [all_views.*, -tag:pii]
+ai_context: |-
+  Use this topic for device reliability, shipping, replacements and why headsets come back.
+  - "Fault rate" means fault_rate grouped by firmware_version or manufacture_batch.
+  - Firmware 4.2.0 (batch B07, shipped Jan 15 to Apr 30 2026) had a much higher fault rate. Replacements
+    were slow in Feb and Mar 2026. When asked about device problems, check this first.
+  - "Program completed" and "Rental term ended" returns are healthy exits. "Non-use", "Never started",
+    and "Discomfort or motion sickness" are avoidable exits. Point that out when showing return reasons.
+sample_queries:
+  Fault rate by firmware:
+    query:
+      fields: [marts__fct_orders.firmware_version, marts__fct_orders.headsets_shipped, marts__fct_orders.fault_rate, marts__fct_orders.avg_days_without_working_device]
+      base_view: marts__fct_orders
+    description: Device fault rate and downtime by firmware version.
+    prompt: Are some headsets failing more than others?
+  Return reasons:
+    query:
+      fields: [marts__fct_orders.return_reason, marts__fct_orders.returns]
+      base_view: marts__fct_orders
+      filters: { marts__fct_orders.order_status: { is: [Returned, Return requested] } }
+    description: Why headsets come back.
+    prompt: Why are members returning headsets?

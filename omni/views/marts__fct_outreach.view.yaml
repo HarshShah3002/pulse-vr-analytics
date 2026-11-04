@@ -1,0 +1,32 @@
+# View: one row per coach touchpoint (call, SMS, email).
+schema: marts
+table_name: fct_outreach
+label: Coach Outreach
+
+dimensions:
+  touch_id: { sql: '"touch_id"', primary_key: true, hidden: true }
+  member_id: { sql: '"member_id"', hidden: true }
+  coach_id: { sql: '"coach_id"', hidden: true }
+  coach_name: { sql: '"coach_name"', synonyms: [coach, peer coach] }
+  touch_ts: { sql: '"touch_ts"', label: Touch Time, timeframes: [date, week, month, day_of_week_name] }
+  touch_month: { sql: '"touch_month"' }
+  channel: { sql: '"channel"', all_values: [Call, SMS, Email] }
+  touch_type:
+    sql: '"touch_type"'
+    all_values: [Welcome, Setup help, Device support, Check-in, Re-engagement nudge, Program completion]
+    synonyms: [call type, outreach type, reason for contact]
+  outcome: { sql: '"outcome"', all_values: [Reached, Voicemail, No answer, Delivered, Sent] }
+  is_reached: { sql: '"is_reached"' }
+  hours_since_delivery: { sql: '"hours_since_delivery"' }
+
+measures:
+  touches: { aggregate_type: count_distinct, sql: '${touch_id}', synonyms: [outreach attempts, calls, contacts] }
+  reached_touches:
+    aggregate_type: count_distinct
+    sql: ${touch_id}
+    filters: { is_reached: { is: true } }
+  reach_rate:
+    sql: ${reached_touches} / NULLIF(${touches}, 0)
+    format: percent_1
+    synonyms: [connect rate, contact rate]
+  members_touched: { aggregate_type: count_distinct, sql: '${member_id}' }

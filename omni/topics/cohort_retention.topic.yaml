@@ -1,0 +1,31 @@
+# Topic: Cohort Retention (weekly heatmap).
+base_view: marts__fct_member_weeks
+label: Cohort Retention
+description: Weekly retention by start cohort, for heatmaps and retention curves.
+ai_context: |-
+  Use this topic for retention curves and cohort heatmaps.
+  - Always filter is_cohort_cell_complete = true so partial weeks do not look like drop-off.
+  - Heatmap layout: first_session_cohort_month on rows, program_week as a pivot, weekly_retention_rate as the value.
+  - For a single retention curve, use program_week on the x axis and weekly_retention_rate.
+  - Weeks 0 to 12 matter most for the 8-week program. Beyond week 12 is maintenance use.
+sample_queries:
+  Retention heatmap:
+    query:
+      fields: [marts__fct_member_weeks.first_session_cohort_month, marts__fct_member_weeks.program_week, marts__fct_member_weeks.weekly_retention_rate]
+      base_view: marts__fct_member_weeks
+      filters:
+        marts__fct_member_weeks.is_cohort_cell_complete: { is: true }
+        marts__fct_member_weeks.program_week: { less_than_or_equal_to: 12 }
+      pivots: [marts__fct_member_weeks.program_week]
+    description: Cohort retention heatmap for the first 12 weeks.
+    prompt: Show me the cohort retention heatmap
+  Retention curve by 48 hour reach:
+    query:
+      fields: [marts__fct_member_weeks.program_week, marts__fct_member_weeks.welcome_reached_48h, marts__fct_member_weeks.weekly_retention_rate]
+      base_view: marts__fct_member_weeks
+      filters:
+        marts__fct_member_weeks.is_cohort_cell_complete: { is: true }
+        marts__fct_member_weeks.program_week: { less_than_or_equal_to: 12 }
+      pivots: [marts__fct_member_weeks.welcome_reached_48h]
+    description: Weekly retention curves split by early coach contact.
+    prompt: Compare retention curves for members reached in 48 hours vs not

@@ -1,0 +1,57 @@
+# View: one row per headset shipment (initial order or replacement).
+schema: marts
+table_name: fct_orders
+label: Headset Orders
+
+dimensions:
+  order_id: { sql: '"order_id"', primary_key: true }
+  member_id: { sql: '"member_id"', hidden: true }
+  headset_id: { sql: '"headset_id"' }
+  order_type: { sql: '"order_type"', all_values: [Initial, Replacement] }
+  order_status:
+    sql: '"order_status"'
+    all_values: [Delivered, Replaced, Returned, Return requested, In transit, Cancelled, Pending verification]
+  order_date: { sql: '"order_date"', timeframes: [date, week, month, quarter] }
+  delivery_date: { sql: '"delivery_date"', timeframes: [date, week, month, quarter] }
+  order_month: { sql: '"order_month"' }
+  days_order_to_delivery: { sql: '"days_order_to_delivery"', synonyms: [fulfillment time, shipping time] }
+  cancel_reason: { sql: '"cancel_reason"' }
+  return_request_date: { sql: '"return_request_date"', timeframes: [date, week, month] }
+  return_received_date: { sql: '"return_received_date"', timeframes: [date, week, month] }
+  return_reason:
+    sql: '"return_reason"'
+    all_values: [Non-use, Never started, Program completed, Rental term ended, Device fault (swap),
+                 Discomfort or motion sickness, Device issue, Insurance change, Deceased]
+    synonyms: [why returned, churn reason]
+  replacement_date: { sql: '"replacement_date"', timeframes: [date, week, month] }
+  replacement_reason: { sql: '"replacement_reason"' }
+  days_without_working_device:
+    sql: '"days_without_working_device"'
+    description: Days between a fault report and the replacement headset arriving.
+    synonyms: [replacement turnaround, downtime]
+  firmware_version: { sql: '"firmware_version"', all_values: [4.1.3, 4.2.0, 4.3.1], synonyms: [firmware] }
+  manufacture_batch: { sql: '"manufacture_batch"', synonyms: [batch] }
+
+measures:
+  orders: { aggregate_type: count_distinct, sql: '${order_id}' }
+  headsets_shipped:
+    sql: COUNT(DISTINCT CASE WHEN ${delivery_date} IS NOT NULL THEN ${order_id} END)
+    description: Headsets that reached the member (initial or replacement).
+  replaced_headsets:
+    aggregate_type: count_distinct
+    sql: ${order_id}
+    filters: { order_status: { is: Replaced } }
+    synonyms: [faulty headsets, device failures]
+  fault_rate:
+    sql: ${replaced_headsets} / NULLIF(${headsets_shipped}, 0)
+    format: percent_1
+    description: Share of shipped headsets that had to be swapped for a fault.
+    synonyms: [failure rate, defect rate]
+  returns:
+    aggregate_type: count_distinct
+    sql: ${order_id}
+    filters: { order_status: { is: [Returned, Return requested] } }
+  avg_days_without_working_device:
+    aggregate_type: average
+    sql: ${days_without_working_device}
+    synonyms: [replacement turnaround]

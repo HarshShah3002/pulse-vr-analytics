@@ -1,0 +1,58 @@
+# View: one row per member per program week (weeks 0 to 26 after the first session).
+# Powers the cohort retention heatmap.
+schema: marts
+table_name: fct_member_weeks
+label: Member Weeks (Cohort Retention)
+
+dimensions:
+  member_week_key:
+    sql: ${member_id} || '-' || CAST(${program_week} AS VARCHAR)
+    primary_key: true
+    hidden: true
+  member_id: { sql: '"member_id"', hidden: true }
+  first_session_cohort_month:
+    sql: '"first_session_cohort_month"'
+    label: Start Cohort (Month)
+    description: Month of the member's first VR session. Rows of the retention heatmap.
+    synonyms: [cohort, cohort month, start month]
+  delivery_cohort_month: { sql: '"delivery_cohort_month"', label: Delivery Cohort (Month) }
+  program_week:
+    sql: '"program_week"'
+    label: Week Since First Session
+    description: 0 is the first week. Columns of the retention heatmap.
+    synonyms: [week number, weeks since start, tenure week]
+  sessions: { sql: '"sessions"' }
+  minutes: { sql: '"minutes"' }
+  is_active_week:
+    sql: '"is_active_week"'
+    description: At least one session in this program week.
+  is_cohort_cell_complete:
+    sql: '"is_cohort_cell_complete"'
+    description: Every member in the cohort month has lived through this week. Always filter to true for heatmaps.
+  insurance_type: { sql: '"insurance_type"', group_label: Segments }
+  plan_name: { sql: '"plan_name"', group_label: Segments }
+  primary_condition: { sql: '"primary_condition"', group_label: Segments }
+  age_band: { sql: '"age_band"', group_label: Segments }
+  referral_source: { sql: '"referral_source"', group_label: Segments }
+  welcome_reached_48h: { sql: '"welcome_reached_48h"', group_label: Segments, synonyms: [reached in 48 hours] }
+  week1_bucket: { sql: '"week1_bucket"', group_label: Segments }
+  has_home_wifi: { sql: '"has_home_wifi"', group_label: Segments }
+  initial_firmware_version: { sql: '"initial_firmware_version"', group_label: Segments }
+
+measures:
+  cohort_members:
+    aggregate_type: count_distinct
+    sql: ${member_id}
+    description: Members in the cohort who have reached this week.
+  active_members_in_week:
+    aggregate_type: count_distinct
+    sql: ${member_id}
+    filters: { is_active_week: { is: true } }
+  weekly_retention_rate:
+    sql: ${active_members_in_week} / NULLIF(${cohort_members}, 0)
+    format: percent_1
+    description: Share of the cohort that did at least one session in that week.
+    synonyms: [retention, weekly retention, cohort retention]
+    ai_context: For heatmaps, put start cohort on rows, week since first session as a pivot, and filter is_cohort_cell_complete to true.
+  avg_sessions_per_member_week:
+    sql: SUM(${sessions}) / NULLIF(${cohort_members}, 0)
