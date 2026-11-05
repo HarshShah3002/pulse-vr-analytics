@@ -54,7 +54,7 @@ touch_id, member_id, coach_id, touch_ts, channel (Call, SMS, Email), touch_type 
 ### headsets, coaches
 headset_id, model, firmware_version, manufacture_batch, first_ship_date. coach_id, coach_name, hire_date.
 
-## Marts (what Omni reads)
+## Marts (what the app reads)
 
 | Table | Grain | Purpose |
 |---|---|---|

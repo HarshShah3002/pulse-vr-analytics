@@ -4,7 +4,7 @@ Build the Pulse warehouse.
   python build_warehouse.py                 -> local DuckDB file: warehouse/pulse.duckdb
   python build_warehouse.py --motherduck    -> MotherDuck database "pulse" (needs MOTHERDUCK_TOKEN env var)
 
-Layers: raw (CSV as-is) -> staging (cleaned) -> marts (business tables Omni reads).
+Layers: raw (CSV as-is) -> staging (cleaned) -> marts (business tables the app reads).
 """
 import argparse
 import os

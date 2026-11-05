@@ -1,4 +1,4 @@
-"""Run the headline business questions against the marts (what Omni dashboards will show)."""
+"""Run the headline business questions against the marts (what the app shows)."""
 from pathlib import Path
 import duckdb
 

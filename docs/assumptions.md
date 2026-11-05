@@ -1,6 +1,6 @@
 # Simulation Assumptions
 
-The dataset is simulated because real member-level healthcare data is protected. Instead of random columns, each member is simulated day by day through a realistic journey, and the business rules below shape behavior. Every analysis, SQL model and Omni definition in this repo would run unchanged on a real export with the same tables.
+The dataset is simulated because real member-level healthcare data is protected. Instead of random columns, each member is simulated day by day through a realistic journey, and the business rules below shape behavior. Every analysis, SQL model, metric definition and model in this repo would run unchanged on a real export with the same tables.
 
 ## Scale and timeline
 - Referrals from May 2025 to Oct 20 2026, growing about 6% per month (about 4,500 referrals, 4,250 headsets delivered).
